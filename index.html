@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Draggable Card Slider</title>
 
+
     <style>
         * {
             box-sizing: border-box;
@@ -145,6 +146,11 @@
             user-select: none;
         }
 
+        /* for smooth infinity loop */
+        #carousel-slider.no-transition {
+            scroll-behavior: auto;
+        }
+
         /* responsive */
         @media screen and (max-width:930px) {
             #carousel-slider {
@@ -226,14 +232,16 @@
 
 
 
+
     <script>
+        const carousel = document.querySelector('#carousel');
         const C_Slider = document.querySelector('#carousel-slider');
         const arrowBtn = document.querySelectorAll('#d7 span');
         const C_Item_Width = C_Slider.querySelector(".carousel-item").offsetWidth;
         const CarouselChildrens = [...C_Slider.children];
 
 
-        let isDragging = false, startX, startScrollLeft;
+        let isDragging = false, startX, startScrollLeft, timeoutId;
 
         // Get the number of the cards that can fit in the carousel at once
         let cardPreView = Math.round(C_Slider.offsetWidth / C_Item_Width);
@@ -281,15 +289,28 @@
             C_Slider.classList.remove("dragging");
         }
 
+        const autoPlay = () => {
+            if (window.innerWidth < 800) return; // return if window is smaller than 800
+            //Autoplay the carousel after every 2500 ms
+            timeoutId = setTimeout(() => C_Slider.scrollLeft += C_Item_Width, 2500);
+        }
+
+        autoPlay();
+
         const infiniteScroll = () => {
 
             if (C_Slider.scrollLeft === 0) {
-                console.log("Reached the left end")
+                C_Slider.classList.add("no-transition")
                 C_Slider.scrollLeft = C_Slider.scrollWidth - (2 * C_Slider.offsetWidth);
-            } else if (Math.ceil(C_Slider.scrollLeft) === C_Slider.scrollWidth - C_Slider.offsetWidth) {
-                console.log("Reached the Right end");
-                // C_Slider.scrollLeft = C_Slider.offsetWidth;
+                C_Slider.classList.remove("no-transition")
+            } else if (C_Slider.scrollLeft >= C_Slider.scrollWidth - C_Slider.offsetWidth) {
+                C_Slider.classList.add("no-transition")
+                C_Slider.scrollLeft = C_Slider.offsetWidth;
+                C_Slider.classList.remove("no-transition")
             };
+
+            clearTimeout(timeoutId);
+            if (!carousel.matches(":hover")) autoPlay();
 
         }
 
@@ -298,6 +319,9 @@
         C_Slider.addEventListener("mousemove", dragging);
         document.addEventListener("mouseup", dragStop);
         C_Slider.addEventListener("scroll", infiniteScroll);
+        carousel.addEventListener("mouseenter", () => clearTimeout(timeoutId));
+        carousel.addEventListener("mouseleave", autoPlay);
+
     </script>
 
 </body>
