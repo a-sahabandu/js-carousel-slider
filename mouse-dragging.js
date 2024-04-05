@@ -1,10 +1,10 @@
-<script>
-    const C_Slider = document.querySelector('#carousel-slider');
 
-    let isDragging = false, startX, startScrollLeft;
+const C_Slider = document.querySelector('#carousel-slider');
+
+let isDragging = false, startX, startScrollLeft;
 
 const dragStart = (e) => {
-        isDragging = true;
+    isDragging = true;
     C_Slider.classList.add("dragging");
 
     startX = e.pageX;
@@ -18,10 +18,9 @@ const dragging = (e) => {
 }
 
 const dragStop = () => {
-        isDragging = false;
+    isDragging = false;
     C_Slider.classList.remove("dragging");
 }
-    C_Slider.addEventListener("mousedown", dragStart);
-    C_Slider.addEventListener("mousemove", dragging);
-    document.addEventListener("mouseup", dragStop);
-</script>
+C_Slider.addEventListener("mousedown", dragStart);
+C_Slider.addEventListener("mousemove", dragging);
+document.addEventListener("mouseup", dragStop);
