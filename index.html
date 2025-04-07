@@ -1,329 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Draggable Card Slider</title>
-
-
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Carousel</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-        }
-
+      body {
+        width: 1200px;
+        margin: 0 auto;
+      }
+      @media screen and (max-width: 1200px) {
         body {
-            max-width: 1200px;
-            width: 100%;
-            margin: 0 auto;
-            border: 2px solid red;
-            padding: 0 2%;
-
+          width: 100%;
         }
+      }
 
-        #carousel {
-            /* for buttons */
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+      /* should be add .dragging css class and draggable=false to card div so it wont drag when dragging */
+      .dragging {
+        cursor: grab;
+        user-select: none;
+        scroll-behavior: auto;
+        scroll-snap-type: none;
+      }
+      .carousel-slider::-webkit-scrollbar {
+        display: none;
+      }
 
-        #carousel-slider {
-            display: grid;
-            grid-auto-flow: column;
-            grid-auto-columns: calc((100% / 3) - 12px);
-            gap: 16px;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            scroll-behavior: smooth;
-            scrollbar-width: 0;
-            border: 2px dotted green;
-            z-index: 1;
-        }
+      .carousel-slider {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: calc((100% / 3) - 12px);
+        gap: 16px;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        scrollbar-width: 0;
+        /* ----------- impotent------------------- */
+      }
 
-        #carousel-slider::-webkit-scrollbar {
-            display: none;
-        }
+      /* should be add infinity scrolling effect(use this class below the carousel class)  */
+      .no-transitions {
+        scroll-behavior: auto;
+      }
 
-        .carousel-item {
-            scroll-snap-align: start;
-            height: 500px;
-            border: 3px solid yellow;
-            border-radius: 50px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .d1 {
-            width: 100px;
-            height: 100px;
-            border-radius: 50px;
-            border: 5px solid gray;
-            margin: 30px 0;
-        }
-
-        #d2 {
-            background-color: blueviolet;
-        }
-
-        #d3 {
-            background-color: rgb(0, 136, 247);
-        }
-
-        #d4 {
-            background-color: rgb(117, 207, 0);
-        }
-
-        #d5 {
-            background-color: rgb(255, 220, 21);
-        }
-
-        #d6 {
-            background-color: rgb(250, 0, 0);
-        }
-
-
-        #h1 {
-            margin-bottom: 30px;
-        }
-
-        #p1 {
-            text-transform: capitalize;
-            letter-spacing: 1px;
-            text-align: justify;
-            margin-bottom: 20px;
-
-        }
-
-        #bt1 {
-            padding: 15px 40px;
-            font-size: 15px;
-            border-radius: 10px;
-            border-style: none;
-            color: purple;
-            font-weight: bold;
-            background-color: yellow;
-        }
-
-        /* <!-- carousel next and previous button  --> */
-        #d7 {
-            position: absolute;
-            width: 99%;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .s1 {
-            background: yellow;
-            width: 50px;
-            height: 50px;
-            display: block;
-            font-size: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            box-shadow: 1px 1px 5px rgb(252, 185, 0);
-            cursor: pointer;
-            z-index: 1;
-        }
-
-        #carousel-slider.dragging {
-            scroll-behavior: auto;
-            scroll-snap-type: none;
-        }
-
-        #carousel,
-        .dragging,
-        .carousel-item {
-            cursor: grab;
-            user-select: none;
-        }
-
-        /* for smooth infinity loop */
-        #carousel-slider.no-transition {
-            scroll-behavior: auto;
-        }
-
-        /* responsive */
-        @media screen and (max-width:930px) {
-            #carousel-slider {
-                grid-auto-columns: calc((100% / 2) - 12px);
-            }
-        }
-
-        @media screen and (max-width:630px) {
-            #carousel-slider {
-                grid-auto-columns: calc(100%);
-            }
-        }
+      .card {
+        scroll-snap-align: start;
+        /* ----------- impotent------------------- */
+        width: 300px;
+        height: 500px;
+        border: 1px solid;
+      }
     </style>
-</head>
-
-<body>
-    <div id="carousel">
-        <div id="carousel-slider">
-
-            <div class="carousel-item">
-                <div class="d1" id="d2"></div>
-                <h1 id="h1">Youser Name</h1>
-                <p id="p1">Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque quasi voluptates libero
-                    minus
-                    velit ad reprehenderit, veritatis veniam, laboriosam dicta sed iste nobis iure fuga accusamus
-                    inventore fugit ea ipsum.</p>
-                <button id="bt1">Click Here</button>
-            </div>
-
-            <div class="carousel-item">
-                <div class="d1" id="d3"></div>
-                <h1 id="h1">Youser Name</h1>
-                <p id="p1">Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque quasi voluptates libero
-                    minus
-                    velit ad reprehenderit, veritatis veniam, laboriosam dicta sed iste nobis iure fuga accusamus
-                    inventore fugit ea ipsum.</p>
-                <button id="bt1">Click Here</button>
-            </div>
-
-            <div class="carousel-item">
-                <div class="d1" id="d4"></div>
-                <h1 id="h1">Youser Name</h1>
-                <p id="p1">Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque quasi voluptates libero
-                    minus
-                    velit ad reprehenderit, veritatis veniam, laboriosam dicta sed iste nobis iure fuga accusamus
-                    inventore fugit ea ipsum.</p>
-                <button id="bt1">Click Here</button>
-            </div>
-
-            <div class="carousel-item">
-                <div class="d1" id="d5"></div>
-                <h1 id="h1">Youser Name</h1>
-                <p id="p1">Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque quasi voluptates libero
-                    minus
-                    velit ad reprehenderit, veritatis veniam, laboriosam dicta sed iste nobis iure fuga accusamus
-                    inventore fugit ea ipsum.</p>
-                <button id="bt1">Click Here</button>
-            </div>
-
-            <div class="carousel-item">
-                <div class="d1" id="d6"></div>
-                <h1 id="h1">Youser Name</h1>
-                <p id="p1">Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque quasi voluptates libero
-                    minus
-                    velit ad reprehenderit, veritatis veniam, laboriosam dicta sed iste nobis iure fuga accusamus
-                    inventore fugit ea ipsum.</p>
-                <button id="bt1">Click Here</button>
-            </div>
-
-        </div>
-        <!-- carousel next and previous button  -->
-        <div id="d7">
-            <span class="s1" id="next">&#11164;</span>
-            <span class="s1" id="prev">&#11166;</span>
-        </div>
+  </head>
+  <body>
+    <div class="carousel-container">
+      <button id="left" data-carousel-btn><</button>
+      <div class="carousel-slider">
+        <div class="card" draggable="false">1</div>
+        <div class="card" draggable="false">2</div>
+        <div class="card" draggable="false">3</div>
+        <div class="card" draggable="false">4</div>
+        <div class="card" draggable="false">5</div>
+        <div class="card" draggable="false">6</div>
+        <div class="card" draggable="false">7</div>
+        <div class="card" draggable="false">8</div>
+      </div>
+      <button id="right" data-carousel-btn>></button>
     </div>
 
-
-
-
-
-
+    <script src="carousel.js"></script>
     <script>
-        const carousel = document.querySelector('#carousel');
-        const C_Slider = document.querySelector('#carousel-slider');
-        const arrowBtn = document.querySelectorAll('#d7 span');
-        const C_Item_Width = C_Slider.querySelector(".carousel-item").offsetWidth;
-        const CarouselChildrens = [...C_Slider.children];
-
-
-        let isDragging = false, startX, startScrollLeft, timeoutId;
-
-        // Get the number of the cards that can fit in the carousel at once
-        let cardPreView = Math.round(C_Slider.offsetWidth / C_Item_Width);
-        // console.log(cardPreView)
-
-        //insert copies of the last few cards to beginning of carousel for infite scrolling
-        CarouselChildrens.slice(-cardPreView).reverse().forEach(card => {
-            C_Slider.insertAdjacentHTML("afterbegin", card.outerHTML);
-        });
-
-        //insert copies of the last few cards to beginning of carousel for infite scrolling
-        CarouselChildrens.slice(0, cardPreView).forEach(card => {
-            C_Slider.insertAdjacentHTML("beforeend", card.outerHTML);
-        });
-
-
-
-        // add event liseners for the arrow buttons to scroll the carousel left and right
-        arrowBtn.forEach(btn => {
-            btn.addEventListener("click", () => {
-                console.log(btn.id);
-                C_Slider.scrollLeft += btn.id === "next" ? -C_Item_Width : C_Item_Width;
-            });
-        });
-
-
-
-
-        const dragStart = (e) => {
-            isDragging = true;
-            C_Slider.classList.add("dragging");
-
-            startX = e.pageX;
-            startScrollLeft = C_Slider.scrollLeft;
+      new Carousel(
+        ".carousel-container",
+        ".carousel-slider",
+        ".card",
+        "[data-carousel-btn]",
+        {
+          enableDragging: true,
+          enableInfinityScroll: true,
+          enableArrowButtons: true,
+          enableAutoPlay: false,
+          autoPlayInterval: 1000, // Set autoplay interval in milliseconds
+          disableAutoPlayWidth: 480, // Disable autoplay for screens smaller than this width
         }
-
-        const dragging = (e) => {
-            if (!isDragging) return;
-            C_Slider.scrollLeft = startScrollLeft - (e.pageX - startX);
-
-        }
-
-        const dragStop = () => {
-            isDragging = false;
-            C_Slider.classList.remove("dragging");
-        }
-
-        const autoPlay = () => {
-            if (window.innerWidth < 800) return; // return if window is smaller than 800
-            //Autoplay the carousel after every 2500 ms
-            timeoutId = setTimeout(() => C_Slider.scrollLeft += C_Item_Width, 2500);
-        }
-
-        autoPlay();
-
-        const infiniteScroll = () => {
-
-            if (C_Slider.scrollLeft === 0) {
-                C_Slider.classList.add("no-transition")
-                C_Slider.scrollLeft = C_Slider.scrollWidth - (2 * C_Slider.offsetWidth);
-                C_Slider.classList.remove("no-transition")
-            } else if (C_Slider.scrollLeft >= C_Slider.scrollWidth - C_Slider.offsetWidth) {
-                C_Slider.classList.add("no-transition")
-                C_Slider.scrollLeft = C_Slider.offsetWidth;
-                C_Slider.classList.remove("no-transition")
-            };
-
-            clearTimeout(timeoutId);
-            if (!carousel.matches(":hover")) autoPlay();
-
-        }
-
-
-        C_Slider.addEventListener("mousedown", dragStart);
-        C_Slider.addEventListener("mousemove", dragging);
-        document.addEventListener("mouseup", dragStop);
-        C_Slider.addEventListener("scroll", infiniteScroll);
-        carousel.addEventListener("mouseenter", () => clearTimeout(timeoutId));
-        carousel.addEventListener("mouseleave", autoPlay);
-
+      );
     </script>
-
-</body>
-
+  </body>
 </html>
