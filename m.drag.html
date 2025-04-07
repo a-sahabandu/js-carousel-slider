@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Carousel</title>
+    <style>
+      /* should be add .dragging css class and draggable=false to card div so it wont drag when dragging */
+      .dragging {
+        cursor: grab;
+        user-select: none;
+        scroll-behavior: auto;
+        scroll-snap-type: none;
+      }
+      .carousel::-webkit-scrollbar {
+        display: none;
+      }
+      .carousel {
+        /* impotent */
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: calc((100% / 3) - 12px);
+        gap: 12px;
+        /* overflow: hidden; */
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        scrollbar-width: 0;
+        /* ------------------------------ */
+        width: 1000px;
+        border: 2px solid red;
+      }
+      .card {
+        scroll-snap-align: start;
+        /* -------------- impotent ----------  */
+        width: 300px;
+        height: 500px;
+        border: 1px solid;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="carousel">
+        <div class="card" draggable="false">1</div>
+        <div class="card" draggable="false">2</div>
+        <div class="card" draggable="false">3</div>
+        <div class="card" draggable="false">4</div>
+        <div class="card" draggable="false">01</div>
+        <div class="card" draggable="false">02</div>
+        <div class="card" draggable="false">03</div>
+        <div class="card" draggable="false">04</div>
+      </div>
+    </div>
+
+    <script>
+      const carousel = document.querySelector(".carousel");
+      //   for mouse dragging
+      let is_dragging = false,
+        startX,
+        startScrollLeft;
+
+      const drag_start = (e) => {
+        is_dragging = true;
+        carousel.classList.add("dragging");
+        startX = e.pageX;
+        startScrollLeft = carousel.scrollLeft;
+      };
+      const dragging = (e) => {
+        if (!is_dragging) return; // if is_dragging is false return from here
+        carousel.scrollLeft = startScrollLeft - (e.pageX - startX);
+      };
+
+      const drag_stop = () => {
+        is_dragging = false;
+        carousel.classList.remove("dragging");
+      };
+
+      carousel.addEventListener("mousedown", drag_start);
+      carousel.addEventListener("mousemove", dragging);
+      carousel.addEventListener("mouseup", drag_stop);
+    </script>
+  </body>
+</html>

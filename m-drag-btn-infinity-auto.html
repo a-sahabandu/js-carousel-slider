@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Carousel</title>
+  </head>
+
+  <body>
+    <div class="carousel-container">
+      <button id="left" data-carousel-btn>next</button>
+      <div class="carousel-slider">
+        <div class="card" draggable="false">1</div>
+        <div class="card" draggable="false">2</div>
+        <div class="card" draggable="false">3</div>
+        <div class="card" draggable="false">4</div>
+        <div class="card" draggable="false">5</div>
+        <div class="card" draggable="false">6</div>
+        <div class="card" draggable="false">7</div>
+        <div class="card" draggable="false">8</div>
+      </div>
+      <button id="right" data-carousel-btn>Previous</button>
+    </div>
+
+    <script>
+      //   ------------ Mouse Dragging START -------------------
+      const carousel = document.querySelector(".carousel-slider");
+      //   for mouse dragging
+      let is_dragging = false,
+        startX,
+        startScrollLeft,
+        timeout_id;
+
+      const drag_start = (e) => {
+        is_dragging = true;
+        carousel.classList.add("dragging");
+        startX = e.pageX;
+        startScrollLeft = carousel.scrollLeft;
+      };
+      const dragging = (e) => {
+        if (!is_dragging) return; // if is_dragging is false return from here
+        carousel.scrollLeft = startScrollLeft - (e.pageX - startX);
+      };
+
+      const drag_stop = () => {
+        is_dragging = false;
+        carousel.classList.remove("dragging");
+      };
+
+      carousel.addEventListener("mousedown", drag_start);
+      carousel.addEventListener("mousemove", dragging);
+      carousel.addEventListener("mouseup", drag_stop);
+      //   ------------ Mouse Dragging END -------------------
+
+      //   ------------Arrow Button START -------------------
+      const arrow_btns = document.querySelectorAll("button");
+      const card_width = carousel.querySelector(".card").offsetWidth; //getting width of the first card
+
+      // add event listeners for the arrow buttons to scroll the carousel left and right
+      arrow_btns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          carousel.scrollLeft += btn.id === "left" ? -card_width : card_width;
+        });
+      });
+      //   ------------Arrow Button END -------------------
+
+      //   ------------Infinity scrolling START ----------------
+      const carousel_children = [...carousel.children];
+      // get the number of cards that can fit in the carousel at once
+      let card_per_view = Math.round(carousel.offsetWidth / card_width);
+
+      //insert copies of the last few cards to beginning of carousel for infinity scrolling
+      carousel_children
+        .slice(-card_per_view)
+        .reverse()
+        .forEach((card) => {
+          carousel.insertAdjacentHTML("afterbegin", card.outerHTML);
+        });
+
+      //insert copies of the first few cards to end of carousel for infinity scrolling
+      carousel_children.slice(0, card_per_view).forEach((card) => {
+        carousel.insertAdjacentHTML("beforeend", card.outerHTML);
+      });
+      //if the carousel is at the beginning , scroll to the top
+      const infinity_scroll = () => {
+        if (carousel.scrollLeft == 0) {
+          console.log("Reached the left of the slider");
+          // if the carousel is at the beginning, scroll to the end
+          carousel.classList.add("no-transitions");
+          carousel.scrollLeft = carousel.scrollWidth - 2 * carousel.offsetWidth;
+          carousel.classList.remove("no-transitions");
+        }
+        // if the carousel is at the end , scroll to the top
+        else if (
+          Math.ceil(carousel.scrollLeft) ===
+          carousel.scrollWidth - carousel.offsetWidth
+        ) {
+          console.log("Reached the right of the slider");
+          // if the carousel is at the end,scroll to the beginning
+          carousel.classList.add("no-transitions");
+          carousel.scrollLeft = carousel.offsetWidth;
+          carousel.classList.remove("no-transitions");
+        }
+        // clear existing timeout & start autoplay is mouse is not hovering over carousel
+        clearTimeout(timeout_id);
+        if (!carousel_container.matches(":hover")) auto_play();
+      };
+
+      carousel.addEventListener("scroll", infinity_scroll);
+      //   ------------Infinity scrolling END -------------------
+
+      //   ------------ Auto play START -----------------
+      var carousel_container = document.querySelector(".carousel-container");
+      const auto_play = () => {
+        if (window.innerWidth < 320) return; // Return if window is smaller than 800
+        // autoplay the carousel after every 2500ms
+        timeout_id = setTimeout(
+          () => (carousel.scrollLeft += card_width),
+          2000
+        );
+      };
+      auto_play();
+
+      carousel_container.addEventListener("mouseenter", () =>
+        clearTimeout(timeout_id)
+      );
+      carousel_container.addEventListener("mouseleave", auto_play);
+
+      //   ------------ Auto play END -------------------
+    </script>
+  </body>
+</html>
